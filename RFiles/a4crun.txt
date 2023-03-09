@@ -1,0 +1,10 @@
+# Fit a full two-way ANOVA model with the response variable yield and the two factors block and N
+> npk_anova <- aov(yield ~ block + N, data = npk_dist)
+> summary(npk_anova)
+            Df Sum Sq Mean Sq F value Pr(>F)   
+block        5  343.3   68.66   3.395 0.0262 * 
+N            1  189.3  189.28   9.360 0.0071 **
+Residuals   17  343.8   20.22                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 

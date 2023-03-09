@@ -1,0 +1,85 @@
+# Model 1: Including the interaction between N and block
+> npk_model1 <- lm(yield ~ N*block + P + K, data = npk_dist)
+> summary(npk_model1)
+
+Call:
+lm(formula = yield ~ N * block + P + K, data = npk_dist)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.267 -1.608  0.000  1.608  4.267 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   50.733      2.875  17.648 7.26e-09 ***
+N1            11.750      3.764   3.122   0.0108 *  
+block2         7.600      3.764   2.019   0.0711 .  
+block3        10.750      3.764   2.856   0.0171 *  
+block4        -3.300      3.764  -0.877   0.4012    
+block5         2.000      3.764   0.531   0.6068    
+block6         6.450      3.764   1.714   0.1174    
+P1            -1.183      1.537  -0.770   0.4590    
+K1            -3.983      1.537  -2.592   0.0268 *  
+N1:block2     -8.350      5.323  -1.569   0.1478    
+N1:block3     -8.000      5.323  -1.503   0.1638    
+N1:block4     -1.200      5.323  -0.225   0.8262    
+N1:block5    -11.000      5.323  -2.067   0.0657 .  
+N1:block6     -8.250      5.323  -1.550   0.1522    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.764 on 10 degrees of freedom
+Multiple R-squared:  0.8383,	Adjusted R-squared:  0.6282 
+F-statistic: 3.989 on 13 and 10 DF,  p-value: 0.01731
+
+> 
+> # Model 2: Including the interaction between P and block
+> npk_model2 <- lm(yield ~ P*block + N + K, data = npk_dist)
+> summary(npk_model2)
+
+Call:
+lm(formula = yield ~ P * block + N + K, data = npk_dist)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.317 -2.038  0.000  2.038  4.317 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   51.083      3.138  16.280 1.59e-08 ***
+P1             4.250      4.108   1.034  0.32528    
+block2         5.750      4.108   1.400  0.19189    
+block3        10.350      4.108   2.519  0.03043 *  
+block4         1.850      4.108   0.450  0.66210    
+block5        -1.250      4.108  -0.304  0.76717    
+block6         4.700      4.108   1.144  0.27927    
+N1             5.617      1.677   3.349  0.00738 ** 
+K1            -3.983      1.677  -2.375  0.03895 *  
+P1:block2     -4.650      5.810  -0.800  0.44212    
+P1:block3     -7.200      5.810  -1.239  0.24356    
+P1:block4    -11.500      5.810  -1.979  0.07596 .  
+P1:block5     -4.500      5.810  -0.775  0.45655    
+P1:block6     -4.750      5.810  -0.818  0.43267    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 4.108 on 10 degrees of freedom
+Multiple R-squared:  0.8074,	Adjusted R-squared:  0.557 
+F-statistic: 3.225 on 13 and 10 DF,  p-value: 0.03535
+
+> 
+> # Model without the main effect of N
+> npk_model_noN <- lm(yield ~ block + P + K, data = npk_dist)
+> 
+> # Compare models with and without the main effect of N
+> anova(npk_model_noN, npk_model1)
+Analysis of Variance Table
+
+Model 1: yield ~ block + P + K
+Model 2: yield ~ N * block + P + K
+  Res.Df    RSS Df Sum of Sq      F Pr(>F)  
+1     16 429.47                             
+2     10 141.67  6     287.8 3.3859 0.0433 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 

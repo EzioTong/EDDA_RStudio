@@ -1,0 +1,154 @@
+---
+title: "Assignment 2"
+author: "Shutong Cai, Stijn de Groot, Yichen Tong, group 20"
+date: "10 March 2023"
+output: pdf_document
+highlight: tango
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+\vspace{-5truemm}
+
+## Exercise 1
+
+**a)** We first read the data from the "treeVolume.txt" file using the `read.table()` function. Then, we perform the one-way ANOVA test using the `aov()` function where we specify the dependent variable `volume` and independent variable `type` along with the data frame `tree_data`. Finally, we print the ANOVA summary using the `summary()` function.
+
+The output of the ANOVA summary will show us whether the tree type has a significant effect on the volume or not. If the p-value of the F-test is less than 0.05, we can conclude that there is a significant difference in volume between the two tree types.
+
+```{r, collapse=TRUE}
+# Read the data from treeVolume.txt file
+tree_data <- read.table("treeVolume.txt", header = TRUE)
+
+# Perform one-way ANOVA test
+anova_result <- aov(volume ~ type, data = tree_data)
+
+# Print the ANOVA summary
+summary(anova_result)
+
+```
+
+In some situations the t-test can be related to the above ANOVA test if we have only two groups which are Beech and Oak. In such a case, we can perform a two-sample t-test to compare the means of the two groups. However, in this case, we have more than two groups, so we cannot use a t-test. To estimate the volumes for the two tree types, we can use the `aggregate()` function in R to calculate the mean volume for each tree type.
+
+```{r, collapse=TRUE}
+# Calculate mean volumes for each tree type
+mean_volumes <- aggregate(volume ~ type, data = tree_data, mean)
+
+# Print the mean volumes
+mean_volumes
+
+```
+
+Then the mean volume for each tree type would be calculated using the `aggregate()` function where we specify the dependent variable `volume` as well as `type`, and the data frame `tree_data`. Finally, we print the mean volumes using the `mean_volumes` variable, which would show us the estimated volumes for the two tree types.
+
+**b)** The `lm()` function could be used to build a multiple linear regression model. So that we can analyze using diameter and height as the explanatory variables for this model.
+
+```{r, collapse=TRUE}
+# Build a multiple linear regression model
+model <- lm(volume ~ type + diameter + height, data = tree_data)
+
+# Print the model summary
+summary(model)
+
+```
+
+To investigate whether the influence of diameter on volume is similar for the two tree types, we can add an interaction term between type and diameter in the model. 
+
+```{r, collapse=TRUE}
+# Build a model with interaction term between type and diameter
+model_interaction <- lm(volume ~ type * diameter + height, data = tree_data)
+
+# Print the model summary
+summary(model_interaction)
+
+```
+
+Having run the code, we would get the coefficients, standard errors, t-values, and p-values for each independent variable and interaction term. If the interaction term is significant such as the p-value less than 0.05, it indicates that the effect of diameter on volume differs between the two tree types.Similarly, we can investigate the influence of height on volume by adding an interaction term between type and height in the model.
+
+```{r, collapse=TRUE}
+# Build a model with interaction term between type and height
+model_interaction2 <- lm(volume ~ type + diameter + height + type*height, data = tree_data)
+
+# Print the model summary
+summary(model_interaction2)
+
+```
+
+The results of the multiple linear regression models and their interaction terms can help us to understand the relationship between the independent variables and the dependent variable. In this case, we can see whether the effect of diameter or height on volume differs between the two tree types. If there is a significant interaction term, it means that we cannot simply compare the coefficients of the independent variables for the two tree types, but we need to take the interaction into account.
+
+**c)** The multiple linear regression model that we built in Question b) could be used to continue this question.
+
+```{r, collapse=TRUE}
+# Print the coefficients and their significance
+coef(summary(model))
+
+```
+
+The multiple linear regression model would output the coefficients for the intercept, type which is Oak, diameter, and height, as well as their standard errors, t-values, and p-values. The p-values indicate the significance of each independent variable in predicting the dependent variable.
+
+To predict the volume for a tree with the average diameter and height, we can use the `predict()` function.
+
+```{r, collapse=TRUE}
+# Predict volume for a tree with average diameter and height
+mean_diameter <- mean(tree_data$diameter)
+mean_height <- mean(tree_data$height)
+
+predict(model, newdata = data.frame(type = "Beech", diameter = mean_diameter, height = mean_height))
+
+```
+
+The coefficients and their significance can help us understand the direction and strength of the relationship between the independent variables and the dependent variable. In this case, we can see that diameter and height have a positive effect on volume, while the type of tree Oak has a negative effect. The p-values indicate that all three independent variables are significant in predicting volume.
+
+Using the resulting model, we can predict the volume for a tree with the average diameter and height. The predicted volume will depend on the type of the tree, which we assume to be Beech in the solution. We can use the `predict()` function to predict the volume for different values of diameter, height, and tree type.
+
+**d)** The following solution mainly complete the tasks of loading files, data structure check, linear model initializing and new logarithmic transformation establishment and checking.
+
+```{r, collapse=TRUE}
+# Load the data from treeVolume.txt file
+tree_data <- read.table("treeVolume.txt", header = TRUE)
+
+# Check the structure of the data
+str(tree_data)
+
+# Fit the initial linear model with diameter and height as explanatory variables
+initial_model <- lm(volume ~ diameter + height, data = tree_data)
+
+# Check the summary of the initial model
+summary(initial_model)
+
+# Create a scatter plot matrix of the variables in the initial model
+plot(tree_data[,c("volume","diameter","height")])
+
+# Check the correlation matrix of the variables in the initial model
+cor(tree_data[,c("volume","diameter","height")])
+
+# Propose a logarithmic transformation of the explanatory variables diameter and height
+tree_data$log_diameter <- log(tree_data$diameter)
+tree_data$log_height <- log(tree_data$height)
+
+# Fit the transformed linear model with log-transformed diameter and height as explanatory variables
+transformed_model <- lm(volume ~ log_diameter + log_height, data = tree_data)
+
+# Check the summary of the transformed model
+summary(transformed_model)
+
+# Compare the initial and transformed models using ANOVA
+anova(initial_model, transformed_model)
+
+
+```
+
+To begin with, a scatter plot matrix is created and then the correlation matrix of the variables in the initial model is checked. After that, we create a logarithmic transformation of the explanatory variables diameter and height and fits a transformed linear model with log-transformed diameter and height as explanatory variables. We should also check the summary of the transformed model and compares it with the initial model using ANOVA.
+
+Then, we can further explore and evaluate the transformed model to determine if it is a better fit than the initial model. We use diagnostic plots such as residual vs fitted values plot, normal Q-Q plot, and scale-location plot. Here's some R code that generates these plots for the transformed model
+
+```{r, collapse=TRUE}
+
+# Generate diagnostic plots for the transformed model
+par(mfrow=c(2,2))
+plot(transformed_model)
+
+```
+
+By running the solution above, we can generate a 2x2 plot window with four diagnostic plots: residual vs fitted values plot, normal Q-Q plot, scale-location plot, and a plot of Cook's distance.
